@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kz-node
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: kz-node
+  template:
+    metadata:
+      labels:
+        app: kz-node
+    spec:
+      containers:
+        - name: kz-node
+          image: andygr1n1/kz-node:latest
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 8008

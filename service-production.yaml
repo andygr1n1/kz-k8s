@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kz-node
+spec:
+  # For production with Ingress, we use ClusterIP
+  type: ClusterIP
+  selector:
+    app: kz-node
+  ports:
+    - targetPort: 8008
+      port: 80
+      protocol: TCP 

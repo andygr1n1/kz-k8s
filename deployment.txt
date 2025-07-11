@@ -1,0 +1,3 @@
+Current kz-node: Keep at 250m (seems reasonable for a Node.js app)
+Databases: 300-500m each (depending on workload)
+UI components: 150-200m each

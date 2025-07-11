@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kz-node-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # Custom port configuration
+    nginx.ingress.kubernetes.io/server-snippet: |
+      listen 448 ssl;
+      ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+      ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: srv642680.hstgr.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kz-node
+            port:
+              number: 80 

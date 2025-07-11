@@ -1,0 +1,11 @@
+```
+mk apply -f nginx.yaml
+```
+
+```
+mk delete -f kz-node.yaml -f service.yaml
+```
+
+```
+minikube service kz-node
+```
