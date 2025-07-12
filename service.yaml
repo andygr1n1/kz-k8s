@@ -22,4 +22,4 @@ spec:
       # The external port you will use to access the service from outside the cluster.
       # NOTE: By default, this must be in the 30000-32767 range.
       # Using a static port for consistent access
-      nodePort: 30008
+      nodePort: 30400
