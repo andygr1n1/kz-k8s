@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kz-backend-tls
+spec:
+  secretName: kz-backend-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - srv642680.hstgr.cloud

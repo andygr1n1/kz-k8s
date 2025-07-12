@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: http-proxy-config
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        upstream backend {
+            server kz-node-direct.default.svc.cluster.local:80;
+        }
+        
+        server {
+            listen 30400;
+            server_name srv642680.hstgr.cloud;
+            
+            location / {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto http;
+            }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-proxy
+  template:
+    metadata:
+      labels:
+        app: http-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 30400
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: http-proxy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-backend
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: 30400
+    nodePort: 30401
+  selector:
+    app: http-proxy

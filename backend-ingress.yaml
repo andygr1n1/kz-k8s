@@ -1,12 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kz-node-ingress-ssl
+  name: kz-backend-ingress
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      listen 30400 ssl http2;
+      if ($server_port = 30400) {
+        set $backend_ssl on;
+      }
 spec:
   ingressClassName: nginx
   tls:
@@ -21,6 +25,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: kz-node-direct
+            name: kz-node
             port:
               number: 80
