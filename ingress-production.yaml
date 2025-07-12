@@ -3,24 +3,37 @@ kind: Ingress
 metadata:
   name: kz-node-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # Cert-manager annotations for automatic SSL
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # Custom port configuration
     nginx.ingress.kubernetes.io/server-snippet: |
-      listen 448 ssl;
-      ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
-      ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+      listen 30448 ssl http2;
+      ssl_protocols TLSv1.2 TLSv1.3;
+      ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
+      ssl_prefer_server_ciphers off;
 spec:
-  ingressClassName: nginx
+  tls:
+  - hosts:
+    - srv642680.hstgr.cloud
+    secretName: kz-node-tls
   rules:
-  - host: srv642680.hstgr.cloud
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: kz-node
-            port:
-              number: 80 
+    - host: "srv642680.hstgr.cloud"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kz-node
+                port:
+                  number: 80
+  # Optionally, define a default backend
+  defaultBackend:
+    service:
+      name: default-backend-service
+      port:
+        number: 30448
